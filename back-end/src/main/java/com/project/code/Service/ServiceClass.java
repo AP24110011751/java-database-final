@@ -1,26 +1,45 @@
+
 package com.project.code.Service;
 
+import com.project.code.Model.*;
+import com.project.code.Repo.*;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ServiceClass {
-    
-// 1. **validateInventory Method**:
-//    - Checks if an inventory record exists for a given product and store combination.
-//    - Parameters: `Inventory inventory`
-//    - Return Type: `boolean` (Returns `false` if inventory exists, otherwise `true`)
 
-// 2. **validateProduct Method**:
-//    - Checks if a product exists by its name.
-//    - Parameters: `Product product`
-//    - Return Type: `boolean` (Returns `false` if a product with the same name exists, otherwise `true`)
+    private final InventoryRepository inventoryRepository;
+    private final ProductRepository productRepository;
 
-// 3. **ValidateProductId Method**:
-//    - Checks if a product exists by its ID.
-//    - Parameters: `long id`
-//    - Return Type: `boolean` (Returns `false` if the product does not exist with the given ID, otherwise `true`)
+    public ServiceClass(
+            InventoryRepository inventoryRepository,
+            ProductRepository productRepository) {
+        this.inventoryRepository = inventoryRepository;
+        this.productRepository = productRepository;
+    }
 
-// 4. **getInventoryId Method**:
-//    - Fetches the inventory record for a given product and store combination.
-//    - Parameters: `Inventory inventory`
-//    - Return Type: `Inventory` (Returns the inventory record for the product-store combination)
+    // 1. Check whether inventory exists
+    public boolean validateInventory(Inventory inventory) {
+        return !inventoryRepository
+                .existsByProduct_IdAndStore_Id(
+                        inventory.getProduct().getId(),
+                        inventory.getStore().getId());
+    }
 
+    // 2. Check whether a product with the same name exists
+    public boolean validateProduct(Product product) {
+        return !productRepository.existsByName(product.getName());
+    }
+
+    // 3. Check whether a product ID exists
+    public boolean ValidateProductId(long id) {
+        return productRepository.existsById(id);
+    }
+
+    // 4. Get inventory for a product and store
+    public Inventory getInventoryId(Inventory inventory) {
+        return inventoryRepository.findByProduct_IdAndStore_Id(
+                inventory.getProduct().getId(),
+                inventory.getStore().getId());
+    }
 }
